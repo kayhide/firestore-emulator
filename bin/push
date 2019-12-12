@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+
+set -eu
+
+die() {
+    >&2 echo "$1"
+    exit 1
+}
+
+[[ -z ${DOCKER_HUB_USERNAME+x} ]] && die "DOCKER_HUB_USERNAME is required"
+
+DOCKER_IMAGE=firestore-emulator
+
+LATEST_IMAGE="$(docker images firestore-emulator --format "{{.Repository}}:{{.Tag}}" | grep :latest)"
+VERSIONED_IMAGE="$(docker images firestore-emulator --format "{{.Repository}}:{{.Tag}}" | grep -v :latest | sort -V | head -n 1)"
+
+[[ -z $LATEST_IMAGE ]] && die "Latest image is not found"
+[[ -z $VERSIONED_IMAGE ]] && die "Versioned image is not found"
+
+push() {
+    docker tag "$1" "$DOCKER_HUB_USERNAME/$1"
+    docker push "$DOCKER_HUB_USERNAME/$1"
+}
+
+push "$LATEST_IMAGE"
+push "$VERSIONED_IMAGE"

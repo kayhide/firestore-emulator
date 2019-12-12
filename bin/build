@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+
+set -eu
+
+die() {
+    >&2 echo "$1"
+    exit 1
+}
+
+DOCKER_IMAGE=firestore-emulator
+
+docker build --tag "$DOCKER_IMAGE:latest" docker
+
+VERSION="$(docker run --rm "$DOCKER_IMAGE:latest" cat .version)"
+[[ -z $VERSION ]] && die "Cannot detect version"
+
+docker tag "$DOCKER_IMAGE:latest" "$DOCKER_IMAGE:$VERSION"
