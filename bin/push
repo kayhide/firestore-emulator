@@ -7,7 +7,7 @@ die() {
     exit 1
 }
 
-[[ -z ${DOCKER_HUB_USERNAME+x} ]] && die "DOCKER_HUB_USERNAME is required"
+[[ -z ${DOCKERHUB_USERNAME+x} ]] && die "DOCKERHUB_USERNAME is required"
 
 DOCKER_IMAGE=firestore-emulator
 
@@ -18,8 +18,11 @@ VERSIONED_IMAGE="$(docker images firestore-emulator --format "{{.Repository}}:{{
 [[ -z $VERSIONED_IMAGE ]] && die "Versioned image is not found"
 
 push() {
-    docker tag "$1" "$DOCKER_HUB_USERNAME/$1"
-    docker push "$DOCKER_HUB_USERNAME/$1"
+    docker tag "$1" "$DOCKERHUB_USERNAME/$1"
+    if [[ -n $DOCKERHUB_ACCESS_TOKEN ]]; then
+        docker login --username "$DOCKERHUB_USERNAME" --password-stdin <<< "$DOCKERHUB_ACCESS_TOKEN"
+    fi
+    docker push "$DOCKERHUB_USERNAME/$1"
 }
 
 push "$LATEST_IMAGE"
