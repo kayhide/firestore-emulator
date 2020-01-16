@@ -14,8 +14,8 @@ RUN apk update \
   && yarn cache clean
 
 ADD firebase.json /home/node/
-ADD firestore.rules /home/node/
-ADD firestore.indexes.json /home/node/
+ADD firestore.rules /etc/firebase/
+ADD firestore.indexes.json /etc/firebase/
 
 USER node
 EXPOSE 8080
