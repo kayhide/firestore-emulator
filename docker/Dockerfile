@@ -10,13 +10,11 @@ RUN apk update \
   && find .cache -name "cloud-firestore-emulator-v*.jar" \
   | sed -e 's/^.*-v\([0-9.]*\)\.jar$/\1/' \
   > .version \
-  && chown -R node:node $HOME \
   && yarn cache clean
 
-ADD firebase.json /home/node/
 ADD firestore.rules /etc/firebase/
 ADD firestore.indexes.json /etc/firebase/
+ADD firebase.json /home/node/
 
-USER node
 EXPOSE 8080
 CMD ["firebase", "emulators:start", "--only", "firestore"]
